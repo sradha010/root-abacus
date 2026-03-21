@@ -1,0 +1,130 @@
+Subject: Project Requirements Confirmation – Roots Abacus & Vedic Maths Website Rebuild
+
+Dear [Client Name],
+
+Thank you for sharing your requirements. I've carefully reviewed everything and would like to confirm the full scope of work before we proceed. Please review the details below and let me know if anything needs to be added or corrected.
+
+---
+
+🌐 PROJECT OVERVIEW
+A complete rebuild of the Roots Abacus & Vedic Maths website from scratch using HTML, CSS, and JavaScript — matching the existing design and layout of the reference site, with a fully functional Admin Panel to manage dynamic content.
+
+---
+
+✅ PHASE 1 — PUBLIC WEBSITE (Frontend)
+
+All the following pages will be built to match the reference site design exactly:
+
+• Homepage (index.html) — Hero, What is Vedic Maths, Course Highlights, Courses, Why Choose Us, Testimonials, Reviews, CTA, Footer
+• Courses Page — Abacus (Age 5–12) & Vedic Maths (Age 12+)
+• Teacher Training Page — Abacus & Vedic Maths Teacher Training
+• Franchise Page
+• Resources Page — Virtual Abacus, Times Tables, Squares & Cubes, Square Roots & Cube Roots (NO changes, kept same as reference)
+• Reviews Page
+• Jobs/Careers Page
+• About Us Page
+• Contact Us Page
+• Privacy Policy, Terms & Conditions, Refund Policy
+• Login Page
+• Sign Up / Registration Page
+
+---
+
+🔧 PHASE 2 — DYNAMIC SECTIONS (Admin-Controlled)
+
+The following sections on the public website will be fully dynamic — meaning their content will be managed from the Admin Panel:
+
+1. LOGO
+   • Admin can upload and change the website logo at any time.
+   • Logo updates will reflect across all pages instantly.
+
+2. FOOTER
+   • Admin can edit footer text, links, social media URLs, phone number, and email address.
+
+3. COURSES SECTION
+   • Admin can add, edit, and delete courses.
+   • For each course, admin can:
+     – Add/update a YouTube video link
+     – Upload a video file directly
+   • Course name, description, and details are all editable.
+   • The public Courses page will dynamically display whatever is saved in the admin.
+
+4. TEACHER TRAINING SECTION
+   • Same dynamic functionality as the Courses section.
+   • Admin can add/edit/remove teacher training programs.
+   • YouTube link or video upload option per training program.
+   • Rest of the section layout remains unchanged.
+
+5. RESOURCES SECTION
+   • ⚠️ NO CHANGES REQUIRED.
+   • This section stays exactly as the reference site.
+
+6. REVIEWS & TESTIMONIALS
+   • Top Section (Testimonials):
+     – Admin can add unlimited testimonials dynamically.
+     – Each testimonial includes: Name, Role, and Review Text.
+     – Design/structure stays the same as reference.
+   • Bottom Section (Structured Reviews):
+     – Replaces image-style reviews with a structured format.
+     – Each review includes: Name, Email, Star Rating (1–5), Review Content.
+     – Displayed in a clean rows/columns format on the public page.
+     – Admin can manage (approve/delete) submitted reviews.
+
+7. JOBS / CAREERS SECTION
+   • Fully dynamic job listings.
+   • Admin can:
+     – Add new job listings (Title, Description, Location, Type, Apply Link)
+     – Edit existing listings
+     – Remove/unpublish listings
+   • Public Jobs page will show only active listings.
+
+8. CONTACT PAGE
+   • Fully dynamic contact page.
+   • Admin can control:
+     – Phone number(s)
+     – Email address(es)
+     – Office address
+     – Google Maps embed link
+     – Contact form fields (labels, options)
+   • All contact details managed from the admin panel.
+
+---
+
+🔐 PHASE 3 — ADMIN PANEL
+
+A secure, clean Admin Panel with the following pages/modules:
+
+• Admin Login (protected access)
+• Dashboard (overview of enquiries, reviews, jobs, etc.)
+• Settings — Logo, Footer, Contact details
+• Courses Manager — Add/Edit/Delete courses with video
+• Teacher Training Manager — Add/Edit/Delete with video
+• Testimonials Manager — Add/Edit/Delete unlimited testimonials
+• Reviews Manager — View structured reviews (name, email, stars, content)
+• Jobs Manager — Add/Edit/Delete job listings
+• Contact Page Manager — Edit all contact page content
+
+---
+
+⚙️ TECHNICAL APPROACH
+
+• Built with: Pure HTML, CSS, and JavaScript (Vanilla — no frameworks)
+• Data storage: Browser localStorage (no backend/database required)
+• All dynamic content is written by the Admin Panel and read by the public pages
+• Fully responsive — works on mobile, tablet, and desktop
+• No hosting/server required for the dynamic functionality
+
+---
+
+📌 IMPORTANT NOTE
+All sections NOT mentioned above will remain exactly as the reference website — same design, same content, same structure. Only the listed sections will have dynamic/admin control.
+
+---
+
+Please confirm that the above matches your expectations. Once you approve, we will proceed with development immediately.
+
+Looking forward to your confirmation.
+
+Best regards,
+[Your Name]
+[Your Contact]
