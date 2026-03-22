@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/layout/ScrollToTop'
 import HomePage from './pages/HomePage'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -19,11 +20,11 @@ import ContactPage from './pages/ContactPage'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 
-
 const App = () => {
   return (
     <PageWrapper>
       <div className="relative overflow-x-hidden">
+        <ScrollToTop />  {/* ✅ Resets scroll on every route change */}
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
