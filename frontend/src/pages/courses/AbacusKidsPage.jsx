@@ -9,14 +9,14 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
-// ── data ─────────────────────────────────────────────────────────────────────
+// ── static data ───────────────────────────────────────────────────────────────
 const whyImportant = [
-  { icon: Target,      title: 'Enhanced Concentration and Focus',       desc: "Manipulating the abacus requires attention to detail, which helps improve a child's ability to concentrate." },
+  { icon: Target,      title: 'Enhanced Concentration and Focus',        desc: "Manipulating the abacus requires attention to detail, which helps improve a child's ability to concentrate." },
   { icon: Brain,       title: 'Improved Memory and Visualization Skills', desc: 'Regular practice strengthens memory retention and sharpens problem-solving abilities.' },
-  { icon: Calculator,  title: 'Faster Mental Arithmetic',               desc: 'With consistent use, abacus learners can perform calculations mentally, improving speed and accuracy.' },
-  { icon: Smile,       title: 'Boosted Confidence in Mathematics',      desc: 'Children who struggle with numbers often find renewed confidence and mental calculation skills through abacus training.' },
-  { icon: TrendingUp,  title: 'Development of Logical Thinking',        desc: 'The process of calculating with an abacus improves logical reasoning and analytical skills.' },
-  { icon: Heart,       title: 'Love for Math',                          desc: 'Abacus education makes math fun and playful, helping children enjoy numbers instead of fearing them.' },
+  { icon: Calculator,  title: 'Faster Mental Arithmetic',                desc: 'With consistent use, abacus learners can perform calculations mentally, improving speed and accuracy.' },
+  { icon: Smile,       title: 'Boosted Confidence in Mathematics',       desc: 'Children who struggle with numbers often find renewed confidence and mental calculation skills through abacus training.' },
+  { icon: TrendingUp,  title: 'Development of Logical Thinking',         desc: 'The process of calculating with an abacus improves logical reasoning and analytical skills.' },
+  { icon: Heart,       title: 'Love for Math',                           desc: 'Abacus education makes math fun and playful, helping children enjoy numbers instead of fearing them.' },
 ]
 
 const overview = [
@@ -40,10 +40,10 @@ const whyRoots = [
 ]
 
 const benefits = [
-  { icon: Zap,    title: 'Super-fast Mental Calculation', desc: 'Enhance speed and accuracy with advanced mental math skills.' },
+  { icon: Zap,    title: 'Super-fast Mental Calculation',  desc: 'Enhance speed and accuracy with advanced mental math skills.' },
   { icon: Target, title: 'Stronger Focus & Concentration', desc: 'Sharpen focus and concentration essential for all subjects.' },
   { icon: Eye,    title: 'Better Memory & Observation',    desc: 'Boost observation power and academic performance naturally.' },
-  { icon: Smile,  title: 'Boost in Confidence',           desc: 'Empower kids to feel proud and excel in academics and beyond.' },
+  { icon: Smile,  title: 'Boost in Confidence',            desc: 'Empower kids to feel proud and excel in academics and beyond.' },
   { icon: Heart,  title: 'Love for Math',                  desc: 'Transform fear into love and excitement for mathematics.' },
 ]
 
@@ -70,13 +70,38 @@ const faqs = [
   { q: 'What if we miss a class?',                 a: 'Missed classes can be rescheduled easily. We offer flexible timing and our support team is always available.' },
 ]
 
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Convert any YouTube watch/short URL into an embeddable src.
+ * Returns null if the URL is not a YouTube link.
+ */
+const toYouTubeEmbed = (url) => {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    // already an embed link
+    if (u.pathname.startsWith('/embed/')) return url
+    // youtu.be/<id>
+    if (u.hostname === 'youtu.be') return `https://www.youtube.com/embed${u.pathname}?rel=0`
+    // youtube.com/watch?v=<id>
+    const v = u.searchParams.get('v')
+    if (v) return `https://www.youtube.com/embed/${v}?rel=0`
+  } catch { /* invalid URL – fall through */ }
+  return null
+}
+
+const isYouTubeUrl = (url) => toYouTubeEmbed(url) !== null
+
 // ── FAQ accordion ─────────────────────────────────────────────────────────────
 const FAQItem = ({ q, a }) => {
   const [open, setOpen] = useState(false)
   return (
     <div className="border-b border-gray-200">
-      <button onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition"
+      >
         <span>{q}</span>
         <span className="text-[#E87722] text-xl font-bold">{open ? '−' : '+'}</span>
       </button>
@@ -85,18 +110,66 @@ const FAQItem = ({ q, a }) => {
   )
 }
 
+// ── video renderer ────────────────────────────────────────────────────────────
+/**
+ * Renders either a YouTube iframe or an mp4 <video> tag
+ * based on the videoType field stored in the DB.
+ */
+const CourseVideo = ({ videoType, videoUrl, videoFile, title, className = '' }) => {
+  if (videoType === 'youtube' && videoUrl) {
+    const embedSrc = toYouTubeEmbed(videoUrl)
+    if (embedSrc) {
+      return (
+        <iframe
+          className={className}
+          src={embedSrc}
+          title={title || 'Course Video'}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      )
+    }
+  }
+
+  if (videoType === 'upload' && videoFile) {
+    return (
+      <video controls className={className}>
+        <source src={videoFile} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    )
+  }
+
+  // fallback – nothing to show
+  return null
+}
+
 // ── main page ─────────────────────────────────────────────────────────────────
 const AbacusKidsPage = () => {
-  const [showModal, setShowModal] = useState(false)
-  const [videos, setVideos]       = useState([])
+  const [showModal, setShowModal]   = useState(false)
+  const [course, setCourse]         = useState(null)   // the abacus course from DB
+  const [videoLoading, setVideoLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch only abacus course videos
-    fetch(`${API_BASE}/reviews/media?type=video&courseType=abacus`)
+    // Fetch the active abacus course so we can pull its video
+    fetch(`${API_BASE}/courses?type=abacus`)
       .then(r => r.json())
-      .then(d => { if (d.success) setVideos(d.data) })
+      .then(d => {
+        if (d.success && d.data?.length > 0) {
+          // Pick the first active abacus course (admin controls order via `order` field)
+          setCourse(d.data[0])
+        }
+      })
       .catch(() => {})
+      .finally(() => setVideoLoading(false))
   }, [])
+
+  // Decide whether we have a valid video to show
+  const hasVideo =
+    course &&
+    course.videoType !== 'none' &&
+    (course.videoUrl || course.videoFile)
 
   return (
     <>
@@ -109,46 +182,27 @@ const AbacusKidsPage = () => {
           <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
             Empower your child with exceptional math skills and cognitive abilities through our expert-led fun, online abacus classes.
           </p>
-          <div className="relative w-full pb-[56.25%] h-0 rounded-2xl overflow-hidden shadow-xl">
-            <iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src="https://www.youtube.com/embed/wf9RmVPM0d8?rel=0"
-              title="Abacus Learning for Kids"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+
+          {/* ── DYNAMIC VIDEO ── */}
+          {videoLoading ? (
+            // Skeleton while fetching
+            <div className="w-full pb-[56.25%] relative rounded-2xl overflow-hidden bg-gray-200 animate-pulse" />
+          ) : hasVideo ? (
+            <div className="relative w-full pb-[56.25%] h-0 rounded-2xl overflow-hidden shadow-xl">
+              <CourseVideo
+                videoType={course.videoType}
+                videoUrl={course.videoUrl}
+                videoFile={course.videoFile}
+                title={course.title}
+                className="absolute top-0 left-0 w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            // No video set in admin – show nothing (clean fallback)
+            null
+          )}
         </div>
       </section>
-
-      {/* ── DYNAMIC VIDEOS (from admin) ── */}
-      {videos.length > 0 && (
-        <section className="py-12 px-6 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
-              Student & Parent Reviews
-            </h2>
-            <div
-              className="flex space-x-5 overflow-x-auto pb-4"
-              style={{ scrollbarWidth: 'thin', scrollbarColor: '#E87722 #f3f4f6' }}
-            >
-              {videos.map((v) => (
-                <div key={v._id} className="min-w-[300px] bg-gray-50 p-3 rounded-2xl shadow-md hover:shadow-lg transition flex-shrink-0">
-                  {v.url.includes('youtube.com') || v.url.includes('youtu.be') ? (
-                    <iframe src={v.url} className="rounded-lg w-full h-52" allowFullScreen title={v.alt} />
-                  ) : (
-                    <video controls className="rounded-lg w-full h-52 object-cover">
-                      <source src={v.url} type="video/mp4" />
-                    </video>
-                  )}
-                  {v.alt && <p className="text-xs text-gray-500 mt-2 text-center">{v.alt}</p>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ── WHAT IS ABACUS ── */}
       <section className="py-14 px-6 bg-gray-50">
@@ -252,7 +306,7 @@ const AbacusKidsPage = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-2">How It Works</h2>
           <p className="text-center text-gray-500 mb-10">Step-by-step process to enroll and succeed with Roots16</p>
           <div className="relative">
-            <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[#E87722] opacity-30"></div>
+            <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[#E87722] opacity-30" />
             <div className="space-y-8">
               {steps.map((step) => (
                 <div key={step.n} className="flex gap-5 items-start">
