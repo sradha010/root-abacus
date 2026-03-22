@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import CallbackModal from '../../components/forms/CallbackModal'
 import MessageButton from '../../components/ui/MessageButton'
@@ -9,25 +9,27 @@ import {
   UserCheck, BarChart, Trophy, Quote
 } from 'lucide-react'
 
-// ── data ────────────────────────────────────────────────────────────────────
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+// ── data ─────────────────────────────────────────────────────────────────────
 const highlights = [
-  { feature: 'Duration', detail: '1 Year (Only 15 minutes daily practice required)' },
-  { feature: 'Eligibility', detail: 'Age 12+ or students preparing for competitive exams' },
-  { feature: 'Levels Covered', detail: '4 Structured Levels' },
-  { feature: 'Syllabus', detail: 'Addition, Subtraction, Multiplication, Division, Square Roots, Cube Roots & More' },
-  { feature: 'Classes', detail: '1 Live Session per Week' },
-  { feature: 'Practice', detail: 'Software-based online practice' },
-  { feature: 'Monitoring', detail: 'Speed & Accuracy tracked through online panel' },
-  { feature: 'Exams', detail: 'Online tests after every level' },
+  { feature: 'Duration',     detail: '1 Year (Only 15 minutes daily practice required)' },
+  { feature: 'Eligibility',  detail: 'Age 12+ or students preparing for competitive exams' },
+  { feature: 'Levels',       detail: '4 Structured Levels' },
+  { feature: 'Syllabus',     detail: 'Addition, Subtraction, Multiplication, Division, Square Roots, Cube Roots & More' },
+  { feature: 'Classes',      detail: '1 Live Session per Week' },
+  { feature: 'Practice',     detail: 'Software-based online practice' },
+  { feature: 'Monitoring',   detail: 'Speed & Accuracy tracked through online panel' },
+  { feature: 'Exams',        detail: 'Online tests after every level' },
   { feature: 'Certificates', detail: 'Awarded after each level completion' },
 ]
 
 const whyKidsLove = [
-  { icon: Zap, title: 'Lightning Fast Calculations', desc: 'Save time in exams with smart mental maths' },
-  { icon: Eye, title: 'Improved Concentration & Focus', desc: 'Exercises sharpen brain function' },
-  { icon: Brain, title: 'Better Memory & Observation', desc: 'Mental maths builds active recall' },
-  { icon: Smile, title: 'Increased Confidence', desc: 'Kids feel proud when they calculate faster than calculators' },
-  { icon: Heart, title: 'Love for Maths', desc: 'No more maths fear – only maths fun!' },
+  { icon: Zap,   title: 'Lightning Fast Calculations',      desc: 'Save time in exams with smart mental maths' },
+  { icon: Eye,   title: 'Improved Concentration & Focus',   desc: 'Exercises sharpen brain function' },
+  { icon: Brain, title: 'Better Memory & Observation',      desc: 'Mental maths builds active recall' },
+  { icon: Smile, title: 'Increased Confidence',             desc: 'Kids feel proud when they calculate faster than calculators' },
+  { icon: Heart, title: 'Love for Maths',                   desc: 'No more maths fear – only maths fun!' },
 ]
 
 const methods = [
@@ -47,56 +49,54 @@ const methods = [
     points: [
       'No maths background needed',
       'Learn at home',
-      'Be your child\'s biggest support',
+      "Be your child's biggest support",
     ],
-    desc: 'Want to teach your child yourself? You can! Enroll in our Online Vedic Maths Teacher Training Course and become your child\'s personal maths coach.',
+    desc: 'Want to teach your child yourself? Enroll in our Online Vedic Maths Teacher Training Course and become your child\'s personal maths coach.',
   },
   {
     icon: MapPin,
     title: 'Offline Center Near You',
-    desc: 'Prefer in-person learning? Submit your location and we\'ll connect you with a nearby trainer (if available).',
+    desc: "Prefer in-person learning? Submit your location and we'll connect you with a nearby trainer (if available).",
   },
 ]
 
 const whyChoose = [
-  { icon: CheckCircle, label: 'ISO 9001:2015 Certified Institute' },
-  { icon: BarChart, label: '10+ Years of Training Experience' },
-  { icon: IndianRupee, label: 'Affordable Fee Plans' },
+  { icon: CheckCircle,  label: 'ISO 9001:2015 Certified Institute' },
+  { icon: BarChart,     label: '10+ Years of Training Experience' },
+  { icon: IndianRupee,  label: 'Affordable Fee Plans' },
   { icon: GraduationCap, label: 'Certified Trainers Only' },
-  { icon: Monitor, label: 'Software-Based Practice & Monitoring' },
-  { icon: BarChart2, label: 'Weekly Progress Reports by Email' },
-  { icon: UserCheck, label: 'Personal Attention to Every Child' },
-  { icon: Trophy, label: 'Regular Online Competitions' },
-  { icon: Users, label: 'Trusted by 10,000+ Parents Worldwide' },
+  { icon: Monitor,      label: 'Software-Based Practice & Monitoring' },
+  { icon: BarChart2,    label: 'Weekly Progress Reports by Email' },
+  { icon: UserCheck,    label: 'Personal Attention to Every Child' },
+  { icon: Trophy,       label: 'Regular Online Competitions' },
+  { icon: Users,        label: 'Trusted by 10,000+ Parents Worldwide' },
 ]
 
 const testimonials = [
   {
-    quote: 'First of all, I express my gratitude towards the teacher. The classes are organised very nicely and the teaching skills are also amazing. My child, Harshit, understands everything taught. I always appreciate the efforts put by Teacher and Roots. Thanks for your cooperation.',
+    quote: 'First of all, I express my gratitude towards the teacher. The classes are organised very nicely and the teaching skills are also amazing. My child, Harshit, understands everything taught.',
     name: 'Sujeet Kumar Singh',
   },
   {
-    quote: 'My daughter have improved the learning concepts of vedic maths as they play. It\'s great mental exercise and sharpens the memory. I was personally satisfied with Roots Abacus learning school',
+    quote: "My daughter have improved the learning concepts of vedic maths as they play. It's great mental exercise and sharpens the memory. I was personally satisfied with Roots Abacus learning school",
     name: 'Ankur Garg',
   },
 ]
 
 const faqs = [
-  { q: 'What age is suitable for Vedic Maths?', a: 'Vedic Maths is ideal for students aged 12 and above, especially those preparing for competitive exams like JEE, NEET, or board exams.' },
-  { q: 'Do I need any prior maths knowledge?', a: 'Basic arithmetic knowledge is sufficient. Our trainers start from the fundamentals and gradually progress to advanced techniques.' },
-  { q: 'How long does it take to see results?', a: 'Most students show noticeable improvement in calculation speed within 2–3 months of regular practice.' },
-  { q: 'Are classes recorded?', a: 'Yes, recorded sessions are available for revision so students never miss out on any concept.' },
+  { q: 'What age is suitable for Vedic Maths?',       a: 'Vedic Maths is ideal for students aged 12 and above, especially those preparing for competitive exams like JEE, NEET, or board exams.' },
+  { q: 'Do I need any prior maths knowledge?',         a: 'Basic arithmetic knowledge is sufficient. Our trainers start from the fundamentals and gradually progress to advanced techniques.' },
+  { q: 'How long does it take to see results?',        a: 'Most students show noticeable improvement in calculation speed within 2–3 months of regular practice.' },
+  { q: 'Are classes recorded?',                        a: 'Yes, recorded sessions are available for revision so students never miss out on any concept.' },
 ]
 
-// ── FAQ accordion ────────────────────────────────────────────────────────────
+// ── FAQ accordion ─────────────────────────────────────────────────────────────
 const FAQItem = ({ q, a }) => {
   const [open, setOpen] = useState(false)
   return (
     <div className="border-b border-gray-200">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition"
-      >
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition">
         <span>{q}</span>
         <span className="text-[#E87722] text-xl font-bold">{open ? '−' : '+'}</span>
       </button>
@@ -105,34 +105,68 @@ const FAQItem = ({ q, a }) => {
   )
 }
 
-// ── main page ────────────────────────────────────────────────────────────────
+// ── main page ─────────────────────────────────────────────────────────────────
 const VedicMathsPage = () => {
   const [showModal, setShowModal] = useState(false)
+  const [videos, setVideos]       = useState([])
+
+  useEffect(() => {
+    // Fetch only vedic maths course videos
+    fetch(`${API_BASE}/reviews/media?type=video&courseType=vedic`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setVideos(d.data) })
+      .catch(() => {})
+  }, [])
 
   return (
     <>
       {/* ── HERO ── */}
-     {/* ── HERO ── */}
-<section
-  className="relative w-full h-[560px] md:h-[450px] px-6 overflow-hidden bg-cover bg-[position:60%_bottom] md:bg-center"
-  style={{
-    backgroundImage: "url('https://abacusclassesonline.com/images2/vedic-for-kids.png')"
-  }}
->
-  <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center md:items-start text-center md:text-left px-4 sm:px-6 lg:px-8 pt-8 md:pt-16">
-    <div className="text-white max-w-xl">
-      <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
-        Roots Online Vedic Maths Training Classes for Kids
-      </h1>
-      <p className="mt-4 text-lg md:text-xl font-medium">
-        Master Speed Maths Through Flexible Online Learning from the Comfort of your Home
-      </p>
-      <p className="mt-1 text-sm sm:text-base font-light italic">
-        ISO 9001:2015 Certified | 10,000+ Happy Students & Parents
-      </p>
-    </div>
-  </div>
-</section>
+      <section
+        className="relative w-full h-[560px] md:h-[450px] px-6 overflow-hidden bg-cover bg-[position:60%_bottom] md:bg-center"
+        style={{ backgroundImage: "url('https://abacusclassesonline.com/images2/vedic-for-kids.png')" }}
+      >
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center md:items-start text-center md:text-left px-4 sm:px-6 lg:px-8 pt-8 md:pt-16">
+          <div className="text-white max-w-xl">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
+              Roots Online Vedic Maths Training Classes for Kids
+            </h1>
+            <p className="mt-4 text-lg md:text-xl font-medium">
+              Master Speed Maths Through Flexible Online Learning from the Comfort of your Home
+            </p>
+            <p className="mt-1 text-sm sm:text-base font-light italic">
+              ISO 9001:2015 Certified | 10,000+ Happy Students & Parents
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── DYNAMIC VIDEOS (from admin) ── */}
+      {videos.length > 0 && (
+        <section className="py-12 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+              Student & Parent Reviews
+            </h2>
+            <div
+              className="flex space-x-5 overflow-x-auto pb-4"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#E87722 #f3f4f6' }}
+            >
+              {videos.map((v) => (
+                <div key={v._id} className="min-w-[300px] bg-gray-50 p-3 rounded-2xl shadow-md hover:shadow-lg transition flex-shrink-0">
+                  {v.url.includes('youtube.com') || v.url.includes('youtu.be') ? (
+                    <iframe src={v.url} className="rounded-lg w-full h-52" allowFullScreen title={v.alt} />
+                  ) : (
+                    <video controls className="rounded-lg w-full h-52 object-cover">
+                      <source src={v.url} type="video/mp4" />
+                    </video>
+                  )}
+                  {v.alt && <p className="text-xs text-gray-500 mt-2 text-center">{v.alt}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── WHAT IS VEDIC MATHS ── */}
       <section className="py-14 px-6 lg:px-40 bg-white">
@@ -254,10 +288,8 @@ const VedicMathsPage = () => {
             ))}
           </div>
           <div className="text-center">
-            <Link
-              to="/reviews"
-              className="inline-block border-2 border-[#E87722] text-[#E87722] font-semibold px-8 py-3 rounded-full hover:bg-[#E87722] hover:text-white transition"
-            >
+            <Link to="/reviews"
+              className="inline-block border-2 border-[#E87722] text-[#E87722] font-semibold px-8 py-3 rounded-full hover:bg-[#E87722] hover:text-white transition">
               Read More Reviews →
             </Link>
           </div>

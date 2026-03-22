@@ -12,6 +12,7 @@ const MediaTab = ({ type }) => {
   const [alt, setAlt]               = useState('')
   const [order, setOrder]           = useState(0)
   const [isActive, setIsActive]     = useState(true)
+  const [courseType, setCourseType] = useState('general')
   const [editId, setEditId]         = useState(null)
   const [showForm, setShowForm]     = useState(false)
   const [loading, setLoading]       = useState(false)
@@ -52,7 +53,7 @@ const MediaTab = ({ type }) => {
 
   const resetForm = () => {
     setFile(null); setPreview(null); setUrl(''); setAlt('')
-    setOrder(0); setIsActive(true); setEditId(null)
+    setOrder(0); setIsActive(true); setCourseType('general'); setEditId(null)
     setShowForm(false); setUploadType('file'); setMsg('')
     if (fileRef.current) fileRef.current.value = ''
   }
@@ -74,6 +75,7 @@ const MediaTab = ({ type }) => {
         formData.append('alt', alt)
         formData.append('order', order)
         formData.append('isActive', isActive)
+        formData.append('courseType', courseType)
 
         if (editId) {
           await API.put(`${endpoint}/${editId}`, formData, {
@@ -85,7 +87,7 @@ const MediaTab = ({ type }) => {
           })
         }
       } else {
-        const payload = { type, url: url.trim(), alt, order, isActive }
+        const payload = { type, url: url.trim(), alt, order, isActive, courseType }
         if (editId) {
           await API.put(`/reviews/media/${editId}`, payload)
         } else {
@@ -104,6 +106,7 @@ const MediaTab = ({ type }) => {
     setAlt(item.alt); setOrder(item.order)
     setIsActive(item.isActive); setUrl(item.url)
     setPreview(item.url); setUploadType('url')
+    setCourseType(item.courseType || 'general')
     setEditId(item._id); setShowForm(true)
     window.scrollTo(0, 0)
   }
@@ -298,6 +301,24 @@ const MediaTab = ({ type }) => {
               </div>
             )}
 
+            {/* Course Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Course <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={courseType}
+                onChange={e => setCourseType(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+              >
+                <option value="general">General (Reviews Page)</option>
+                <option value="abacus">Abacus Kids Course</option>
+                <option value="vedic">Vedic Maths Course</option>
+                <option value="abacus-training">Abacus Teacher Training</option>
+                <option value="vedic-training">Vedic Maths Teacher Training</option>
+              </select>
+            </div>
+
             {/* Alt / Label */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Label / Alt Text</label>
@@ -358,6 +379,7 @@ const MediaTab = ({ type }) => {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Preview</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600">Course</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">URL</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Alt</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Order</th>
@@ -384,6 +406,11 @@ const MediaTab = ({ type }) => {
                   ) : (
                     <img src={item.url} alt={item.alt} className="w-20 h-14 object-cover rounded" />
                   )}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="px-2 py-1 rounded text-xs bg-orange-50 text-orange-700 capitalize">
+                    {item.courseType || 'general'}
+                  </span>
                 </td>
                 <td className="px-4 py-3 text-gray-600 max-w-xs truncate text-xs">{item.url}</td>
                 <td className="px-4 py-3 text-gray-600">{item.alt || '—'}</td>

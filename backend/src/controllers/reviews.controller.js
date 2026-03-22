@@ -1,5 +1,6 @@
-const Review      = require('../models/ReviewMedia')
+const Review      = require('../models/Review')
 const ReviewMedia = require('../models/ReviewMedia')
+const { uploadToCloudinary } = require('../config/cloudinary')
 
 // ── Text Reviews ──────────────────────────────────────────
 exports.getApproved = async (req, res, next) => {
@@ -40,9 +41,9 @@ exports.remove = async (req, res, next) => {
 // ── Media (Videos & Images) ───────────────────────────────
 exports.getMedia = async (req, res, next) => {
   try {
-    const { type } = req.query
     const filter = { isActive: true }
-    if (type) filter.type = type
+    if (req.query.type)       filter.type       = req.query.type
+    if (req.query.courseType) filter.courseType = req.query.courseType
     const media = await ReviewMedia.find(filter).sort({ order: 1, createdAt: -1 })
     res.json({ success: true, data: media })
   } catch (err) { next(err) }
@@ -50,9 +51,9 @@ exports.getMedia = async (req, res, next) => {
 
 exports.getAllMedia = async (req, res, next) => {
   try {
-    const { type } = req.query
     const filter = {}
-    if (type) filter.type = type
+    if (req.query.type)       filter.type       = req.query.type
+    if (req.query.courseType) filter.courseType = req.query.courseType
     const media = await ReviewMedia.find(filter).sort({ order: 1, createdAt: -1 })
     res.json({ success: true, data: media })
   } catch (err) { next(err) }
@@ -60,14 +61,44 @@ exports.getAllMedia = async (req, res, next) => {
 
 exports.createMedia = async (req, res, next) => {
   try {
-    const media = await ReviewMedia.create(req.body)
+    const { type, alt, order, isActive, courseType } = req.body
+    let url = req.body.url || ''
+
+    if (req.file) {
+      const resourceType = type === 'video' ? 'video' : 'image'
+      const folder       = type === 'video' ? 'review_videos' : 'review_images'
+      const result       = await uploadToCloudinary(req.file.buffer, folder, resourceType)
+      url = result.secure_url
+    }
+
+    if (!url) return res.status(400).json({ success: false, message: 'File or URL is required' })
+
+    const media = await ReviewMedia.create({
+      type,
+      url,
+      alt:        alt        || '',
+      order:      order      || 0,
+      isActive:   isActive   !== undefined ? isActive : true,
+      courseType: courseType || 'general',
+    })
+
     res.status(201).json({ success: true, data: media })
   } catch (err) { next(err) }
 }
 
 exports.updateMedia = async (req, res, next) => {
   try {
-    const media = await ReviewMedia.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const updates = { ...req.body }
+
+    if (req.file) {
+      const existing     = await ReviewMedia.findById(req.params.id)
+      const resourceType = existing?.type === 'video' ? 'video' : 'image'
+      const folder       = existing?.type === 'video' ? 'review_videos' : 'review_images'
+      const result       = await uploadToCloudinary(req.file.buffer, folder, resourceType)
+      updates.url = result.secure_url
+    }
+
+    const media = await ReviewMedia.findByIdAndUpdate(req.params.id, updates, { new: true })
     res.json({ success: true, data: media })
   } catch (err) { next(err) }
 }

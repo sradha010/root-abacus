@@ -1,83 +1,82 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CallbackModal from '../../components/forms/CallbackModal'
 import MessageButton from '../../components/ui/MessageButton'
 import {
   Target, Brain, Calculator, Smile, TrendingUp, Heart,
   CheckCircle, Users, DollarSign, FileText, Monitor, Trophy,
-  Zap, Eye, ArrowUpRight, Star,
-  BookOpen, UserCheck, Video, Laptop, BarChart2, Award
+  Zap, Eye, Star,
 } from 'lucide-react'
 
-// ── data ────────────────────────────────────────────────────────────────────
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+// ── data ─────────────────────────────────────────────────────────────────────
 const whyImportant = [
-  { icon: Target, title: 'Enhanced Concentration and Focus', desc: 'Manipulating the abacus requires attention to detail, which helps improve a child\'s ability to concentrate.' },
-  { icon: Brain, title: 'Improved Memory and Visualization Skills', desc: 'Regular practice strengthens memory retention and sharpens problem-solving abilities.' },
-  { icon: Calculator, title: 'Faster Mental Arithmetic', desc: 'With consistent use, abacus learners can perform calculations mentally, improving speed and accuracy.' },
-  { icon: Smile, title: 'Boosted Confidence in Mathematics', desc: 'Children who struggle with numbers often find renewed confidence and mental calculation skills through abacus training.' },
-  { icon: TrendingUp, title: 'Development of Logical Thinking', desc: 'The process of calculating with an abacus improves logical reasoning and analytical skills.' },
-  { icon: Heart, title: 'Love for Math', desc: 'Abacus education makes math fun and playful, helping children enjoy numbers instead of fearing them—this builds a strong love for math from an early age.' },
+  { icon: Target,      title: 'Enhanced Concentration and Focus',       desc: "Manipulating the abacus requires attention to detail, which helps improve a child's ability to concentrate." },
+  { icon: Brain,       title: 'Improved Memory and Visualization Skills', desc: 'Regular practice strengthens memory retention and sharpens problem-solving abilities.' },
+  { icon: Calculator,  title: 'Faster Mental Arithmetic',               desc: 'With consistent use, abacus learners can perform calculations mentally, improving speed and accuracy.' },
+  { icon: Smile,       title: 'Boosted Confidence in Mathematics',      desc: 'Children who struggle with numbers often find renewed confidence and mental calculation skills through abacus training.' },
+  { icon: TrendingUp,  title: 'Development of Logical Thinking',        desc: 'The process of calculating with an abacus improves logical reasoning and analytical skills.' },
+  { icon: Heart,       title: 'Love for Math',                          desc: 'Abacus education makes math fun and playful, helping children enjoy numbers instead of fearing them.' },
 ]
 
 const overview = [
-  { feature: 'Course Duration', detail: '2 Years of abacus training (with just 15 mins daily practice)' },
-  { feature: 'Age Group', detail: '5 to 12 years' },
-  { feature: 'Subjects Covered', detail: 'Addition, Subtraction, Multiplication, Division, using Abacus and Mental Math' },
-  { feature: 'Support Channels', detail: 'WhatsApp, Phone, Email' },
-  { feature: 'Practice Mode', detail: 'Online Learning Software Access' },
-  { feature: 'Monitoring', detail: 'Parent login for real-time performance tracking' },
-  { feature: 'Certification', detail: 'After each level (8 levels total)' },
-  { feature: 'Exams', detail: 'Fully Online' },
+  { feature: 'Course Duration',   detail: '2 Years of abacus training (with just 15 mins daily practice)' },
+  { feature: 'Age Group',         detail: '5 to 12 years' },
+  { feature: 'Subjects Covered',  detail: 'Addition, Subtraction, Multiplication, Division, using Abacus and Mental Math' },
+  { feature: 'Support Channels',  detail: 'WhatsApp, Phone, Email' },
+  { feature: 'Practice Mode',     detail: 'Online Learning Software Access' },
+  { feature: 'Monitoring',        detail: 'Parent login for real-time performance tracking' },
+  { feature: 'Certification',     detail: 'After each level (8 levels total)' },
+  { feature: 'Exams',             detail: 'Fully Online' },
 ]
 
 const whyRoots = [
-  { icon: CheckCircle, title: 'ISO 9001:2015 Certified', desc: 'A mark of quality and excellence - Trusted Since 2015 for online abacus education.' },
-  { icon: Users, title: 'Certified Trainers', desc: 'Live One-on-One Classes with Experienced educators. 10,000+ Active Students trained successfully.' },
-  { icon: DollarSign, title: 'Affordable Fees', desc: 'Quality education that doesn\'t break the bank.' },
-  { icon: FileText, title: 'Regular Progress Reports', desc: 'Stay informed about your child\'s development.' },
-  { icon: Monitor, title: 'Interactive Learning', desc: 'Engaging Software-Based methods that make math fun.' },
-  { icon: Trophy, title: 'Online Competitions', desc: 'Encourage healthy competition and skill enhancement.' },
+  { icon: CheckCircle, title: 'ISO 9001:2015 Certified',      desc: 'A mark of quality and excellence - Trusted Since 2015 for online abacus education.' },
+  { icon: Users,       title: 'Certified Trainers',           desc: 'Live One-on-One Classes with Experienced educators. 10,000+ Active Students trained successfully.' },
+  { icon: DollarSign,  title: 'Affordable Fees',              desc: "Quality education that doesn't break the bank." },
+  { icon: FileText,    title: 'Regular Progress Reports',     desc: "Stay informed about your child's development." },
+  { icon: Monitor,     title: 'Interactive Learning',         desc: 'Engaging Software-Based methods that make math fun.' },
+  { icon: Trophy,      title: 'Online Competitions',          desc: 'Encourage healthy competition and skill enhancement.' },
 ]
 
 const benefits = [
-  { icon: Zap, title: 'Super-fast Mental Calculation', desc: 'Enhance speed and accuracy with advanced mental math skills.' },
+  { icon: Zap,    title: 'Super-fast Mental Calculation', desc: 'Enhance speed and accuracy with advanced mental math skills.' },
   { icon: Target, title: 'Stronger Focus & Concentration', desc: 'Sharpen focus and concentration essential for all subjects.' },
-  { icon: Eye, title: 'Better Memory & Observation', desc: 'Boost observation power and academic performance naturally.' },
-  { icon: Smile, title: 'Boost in Confidence', desc: 'Empower kids to feel proud and excel in academics and beyond.' },
-  { icon: Heart, title: 'Love for Math', desc: 'Transform fear into love and excitement for mathematics.' },
+  { icon: Eye,    title: 'Better Memory & Observation',    desc: 'Boost observation power and academic performance naturally.' },
+  { icon: Smile,  title: 'Boost in Confidence',           desc: 'Empower kids to feel proud and excel in academics and beyond.' },
+  { icon: Heart,  title: 'Love for Math',                  desc: 'Transform fear into love and excitement for mathematics.' },
 ]
 
 const steps = [
-  { n: 1, title: 'Book a Free Counselling Call', desc: 'Schedule a free counseling call with our academic advisor.' },
-  { n: 2, title: 'Get Assigned a Personal Trainer', desc: 'We assign a certified trainer for personalized 1-on-1 coaching.' },
-  { n: 3, title: 'Attend Weekly Online Classes', desc: 'Attend structured weekly classes through our learning portal.' },
+  { n: 1, title: 'Book a Free Counselling Call',         desc: 'Schedule a free counseling call with our academic advisor.' },
+  { n: 2, title: 'Get Assigned a Personal Trainer',      desc: 'We assign a certified trainer for personalized 1-on-1 coaching.' },
+  { n: 3, title: 'Attend Weekly Online Classes',         desc: 'Attend structured weekly classes through our learning portal.' },
   { n: 4, title: 'Daily Practice on Software (15 min)', desc: 'Practice easily at home using our interactive online tools.' },
-  { n: 5, title: 'Receive Monthly Progress Reports', desc: 'Receive monthly detailed reports to track your child\'s growth.' },
+  { n: 5, title: 'Receive Monthly Progress Reports',    desc: "Receive monthly detailed reports to track your child's growth." },
   { n: 6, title: 'Appear for Online Tests & Level Up!', desc: 'Clear online level tests and earn official certifications!' },
 ]
 
 const parentsSay = [
-  { quote: 'We have been taking classes with Priya Mam, who is very friendly and nice which makes learning enjoyable for my son. Abacus has really helped him to become more focused and become familiar with Mathematics. Definitely recommend her', name: 'Jyothi K V' },
-  { quote: 'Thank you soo much Vidhi Ma\'am for everything that you do to help my son Bhavit in enhancing his abacus skills. I salute the teacher for all her hard work, dedication and patience in training our kids and making them become the best version of themselves.', name: 'Charu Sethi' },
-  { quote: 'Roots abacus is very good academic platform for children to improve their mathematics, attention and concentration..my 7 year old child got good opportunity to learn abacus from this institution and talented faculty.', name: 'Sajitha' },
-  { quote: 'Tutor Raghavi is the right person for handling kids at all ages. She mentors them from their understanding level and gradually brings the child to the expected speed. I would highly recommend her for abacus classes.', name: 'Nithya Lakshmi' },
+  { quote: "We have been taking classes with Priya Mam, who is very friendly and nice which makes learning enjoyable for my son. Abacus has really helped him to become more focused and become familiar with Mathematics. Definitely recommend her", name: 'Jyothi K V' },
+  { quote: "Thank you soo much Vidhi Ma'am for everything that you do to help my son Bhavit in enhancing his abacus skills. I salute the teacher for all her hard work, dedication and patience.", name: 'Charu Sethi' },
+  { quote: "Roots abacus is very good academic platform for children to improve their mathematics, attention and concentration..my 7 year old child got good opportunity to learn abacus.", name: 'Sajitha' },
+  { quote: "Tutor Raghavi is the right person for handling kids at all ages. She mentors them from their understanding level and gradually brings the child to the expected speed.", name: 'Nithya Lakshmi' },
 ]
 
 const faqs = [
-  { q: 'What is the best age to start Abacus?', a: 'The ideal age to start abacus is between 5 to 12 years. At this age, children\'s brains are highly receptive, and the training helps build strong neural pathways for math.' },
-  { q: 'Do parents need to sit in the class?', a: 'No, parents don\'t need to sit in the class. However, for younger kids (5-6 years), a parent nearby can be helpful initially. Our trainers are trained to manage kids independently.' },
-  { q: 'Is it hard for kids to learn online?', a: 'Not at all! Our platform is designed to be fun and interactive. Kids love the software-based learning approach, and our trainers are experienced in keeping young learners engaged.' },
-  { q: 'What if we miss a class?', a: 'Missed classes can be rescheduled easily. We offer flexible timing and our support team is always available to help you find the best slot.' },
+  { q: 'What is the best age to start Abacus?',    a: "The ideal age to start abacus is between 5 to 12 years. At this age, children's brains are highly receptive, and the training helps build strong neural pathways for math." },
+  { q: 'Do parents need to sit in the class?',     a: "No, parents don't need to sit in the class. However, for younger kids (5-6 years), a parent nearby can be helpful initially." },
+  { q: 'Is it hard for kids to learn online?',     a: "Not at all! Our platform is designed to be fun and interactive. Kids love the software-based learning approach." },
+  { q: 'What if we miss a class?',                 a: 'Missed classes can be rescheduled easily. We offer flexible timing and our support team is always available.' },
 ]
 
-// ── FAQ accordion ────────────────────────────────────────────────────────────
+// ── FAQ accordion ─────────────────────────────────────────────────────────────
 const FAQItem = ({ q, a }) => {
   const [open, setOpen] = useState(false)
   return (
     <div className="border-b border-gray-200">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition"
-      >
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center py-4 text-left text-gray-800 font-medium hover:text-[#E87722] transition">
         <span>{q}</span>
         <span className="text-[#E87722] text-xl font-bold">{open ? '−' : '+'}</span>
       </button>
@@ -86,9 +85,18 @@ const FAQItem = ({ q, a }) => {
   )
 }
 
-// ── main page ────────────────────────────────────────────────────────────────
+// ── main page ─────────────────────────────────────────────────────────────────
 const AbacusKidsPage = () => {
   const [showModal, setShowModal] = useState(false)
+  const [videos, setVideos]       = useState([])
+
+  useEffect(() => {
+    // Fetch only abacus course videos
+    fetch(`${API_BASE}/reviews/media?type=video&courseType=abacus`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setVideos(d.data) })
+      .catch(() => {})
+  }, [])
 
   return (
     <>
@@ -114,6 +122,34 @@ const AbacusKidsPage = () => {
         </div>
       </section>
 
+      {/* ── DYNAMIC VIDEOS (from admin) ── */}
+      {videos.length > 0 && (
+        <section className="py-12 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+              Student & Parent Reviews
+            </h2>
+            <div
+              className="flex space-x-5 overflow-x-auto pb-4"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#E87722 #f3f4f6' }}
+            >
+              {videos.map((v) => (
+                <div key={v._id} className="min-w-[300px] bg-gray-50 p-3 rounded-2xl shadow-md hover:shadow-lg transition flex-shrink-0">
+                  {v.url.includes('youtube.com') || v.url.includes('youtu.be') ? (
+                    <iframe src={v.url} className="rounded-lg w-full h-52" allowFullScreen title={v.alt} />
+                  ) : (
+                    <video controls className="rounded-lg w-full h-52 object-cover">
+                      <source src={v.url} type="video/mp4" />
+                    </video>
+                  )}
+                  {v.alt && <p className="text-xs text-gray-500 mt-2 text-center">{v.alt}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── WHAT IS ABACUS ── */}
       <section className="py-14 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
@@ -126,15 +162,11 @@ const AbacusKidsPage = () => {
               Despite the advent of modern calculators, the abacus is gaining global recognition as one of the best ways to build strong math skills, focus, and brain development in young learners.
             </p>
             <p className="text-gray-600 leading-relaxed">
-              <strong>Roots Abacus Learning School (ISO 9001:2015 certified)</strong> brings this powerful method to your home through <strong>affordable online training</strong> by certified and friendly trainers. Every child gets personal attention, fun-based learning, and visible improvement—all from the comfort of your home.
+              <strong>Roots Abacus Learning School (ISO 9001:2015 certified)</strong> brings this powerful method to your home through <strong>affordable online training</strong> by certified and friendly trainers.
             </p>
           </div>
           <div className="rounded-xl overflow-hidden shadow-lg">
-            <img
-              src="https://abacusclassesonline.com/images2/abacus_img.webp"
-              alt="Abacus tool"
-              className="w-full h-full object-cover"
-            />
+            <img src="https://abacusclassesonline.com/images2/abacus_img.webp" alt="Abacus tool" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
@@ -156,9 +188,6 @@ const AbacusKidsPage = () => {
               </div>
             ))}
           </div>
-          <p className="text-center text-gray-500 mt-8 max-w-2xl mx-auto">
-            These skills not only enhance mathematical abilities but also contribute to overall academic performance and self-esteem.
-          </p>
         </div>
       </section>
 
