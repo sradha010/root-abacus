@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 const errorHandler = require('./middleware/errorHandler')
+const trainerRouter = require('./routes/trainer.routes')
 
 const app = express()
 
@@ -29,7 +30,7 @@ app.use('/api/jobs',             require('./routes/jobs.routes'))
 app.use('/api/contact',          require('./routes/contact.routes'))
 app.use('/api/settings',         require('./routes/settings.routes'))
 app.use('/api/enquiry',          require('./routes/enquiry.routes'))
-
+app.use('/api/trainers', trainerRouter)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Roots Abacus API running' })
 })
