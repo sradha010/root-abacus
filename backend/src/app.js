@@ -35,6 +35,7 @@ app.use('/api/jobs',             require('./routes/jobs.routes'))
 app.use('/api/contact',          require('./routes/contact.routes'))
 app.use('/api/settings',         require('./routes/settings.routes'))
 app.use('/api/enquiry',          require('./routes/enquiry.routes'))
+app.use('/api/dashboard',        require('./routes/dashboard.routes'))
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Roots Abacus API running' })

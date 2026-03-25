@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import API from '../../api/axios'
 import {
-  BookOpen, Briefcase, Star, Mail, MessageSquare, Users
+  BookOpen, Briefcase, Star, Mail, MessageSquare, Users, Image
 } from 'lucide-react'
 
-const StatCard = ({ label, value, icon: Icon }) => (
+const StatCard = ({ label, value, icon: Icon, sublabel }) => (
   <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 hover:shadow-md transition"
     style={{ borderColor: '#E87722' }}>
     <div className="flex items-center justify-between">
       <div>
         <p className="text-sm text-gray-500">{label}</p>
         <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
+        {sublabel && <p className="text-xs text-gray-400 mt-1">{sublabel}</p>}
       </div>
       <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: '#fff4ec' }}>
@@ -22,42 +23,30 @@ const StatCard = ({ label, value, icon: Icon }) => (
 
 const DashboardPage = () => {
   const [stats, setStats] = useState({
-    courses: 0, jobs: 0, reviews: 0, enquiries: 0, testimonials: 0, trainers: 0
+    courses: 0, jobs: 0, reviews: 0, reviewMedia: 0,
+    enquiries: 0, testimonials: 0, trainers: 0
   })
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [courses, jobs, reviews, enquiries, testimonials, trainers] = await Promise.all([
-          API.get('/courses'),
-          API.get('/jobs/all'),
-          API.get('/reviews/all'),
-          API.get('/enquiry'),
-          API.get('/testimonials'),
-          API.get('/trainers/all'),
-        ])
-        setStats({
-          courses:      courses.data.data.length,
-          jobs:         jobs.data.data.length,
-          reviews:      reviews.data.data.length,
-          enquiries:    enquiries.data.data.length,
-          testimonials: testimonials.data.data.length,
-          trainers:     trainers.data.data.length,
-        })
+        const { data } = await API.get('/dashboard/stats')
+        setStats(data.data)
       } catch (err) {
-        console.error(err)
+        console.error('Dashboard stats failed:', err.response?.data?.message || err.message)
       }
     }
     fetchStats()
   }, [])
 
   const cards = [
-    { label: 'Total Courses',   value: stats.courses,      icon: BookOpen      },
-    { label: 'Active Jobs',     value: stats.jobs,         icon: Briefcase     },
-    { label: 'Reviews',         value: stats.reviews,      icon: Star          },
-    { label: 'Enquiries',       value: stats.enquiries,    icon: Mail          },
-    { label: 'Testimonials',    value: stats.testimonials, icon: MessageSquare },
-    { label: 'Registered Trainers', value: stats.trainers, icon: Users         },
+    { label: 'Total Courses',       value: stats.courses,      icon: BookOpen,      sublabel: null },
+    { label: 'Active Jobs',         value: stats.jobs,         icon: Briefcase,     sublabel: null },
+    { label: 'Review Media',        value: stats.reviewMedia,  icon: Image,         sublabel: 'Videos & images' },
+    { label: 'Pending Reviews',     value: stats.reviews,      icon: Star,          sublabel: 'Awaiting approval' },
+    
+    { label: 'Testimonials',        value: stats.testimonials, icon: MessageSquare, sublabel: null },
+    { label: 'Registered Trainers', value: stats.trainers,     icon: Users,         sublabel: null },
   ]
 
   return (

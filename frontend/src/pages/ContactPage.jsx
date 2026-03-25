@@ -29,6 +29,15 @@ const ContactPage = () => {
     finally { setLoading(false) }
   }
 
+  const getHandle = (url) => {
+    try {
+      const parsed = new URL(url)
+      return parsed.pathname.replace(/\/$/, '') || parsed.hostname
+    } catch {
+      return url
+    }
+  }
+
   return (
     <>
       {/* ── HERO ── */}
@@ -102,34 +111,33 @@ const ContactPage = () => {
                 </div>
                 <h4 className="text-xl font-bold text-[#E87722]">Contact Us</h4>
                 <ul className="text-left text-sm text-gray-700 space-y-3 w-full">
-                  <li className="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.37 18 19.5 19.5 0 0 1 3 9.13 2 2 0 0 1 5.11 7h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 14.09a16 16 0 0 0 6 6"/>
-                    </svg>
-                    <a href="tel:+919871151911" className="hover:text-[#E87722] underline">+91 98711 51911</a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                    </svg>
-                    <a href="https://wa.me/919871151911" target="_blank" rel="noopener noreferrer" className="hover:text-[#E87722] underline">
-                      WhatsApp: +91 98711 51911
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                      <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                    <a href="mailto:support@RootsAbacusLearningSchool.com" className="hover:text-[#E87722] underline text-xs break-all">
-                      support@RootsAbacusLearningSchool.com
-                    </a>
-                  </li>
                   {contact?.phones?.map((p, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                      <span className="text-[#E87722]">📞</span> {p}
+                    <li key={i} className="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.37 18 19.5 19.5 0 0 1 3 9.13 2 2 0 0 1 5.11 7h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 14.09a16 16 0 0 0 6 6"/>
+                      </svg>
+                      <a href={`tel:${p}`} className="hover:text-[#E87722] underline">{p}</a>
                     </li>
                   ))}
+                  {contact?.emails?.map((e, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                      </svg>
+                      <a href={`mailto:${e}`} className="hover:text-[#E87722] underline text-xs break-all">{e}</a>
+                    </li>
+                  ))}
+                  {contact?.socialLinks?.whatsapp && (
+                    <li className="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                      </svg>
+                      <a href={contact.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-[#E87722] underline">
+                        WhatsApp: {getHandle(contact.socialLinks.whatsapp)}
+                      </a>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -147,20 +155,28 @@ const ContactPage = () => {
                 <h4 className="text-xl font-bold text-[#E87722]">Follow Us</h4>
                 <ul className="text-left text-sm text-gray-700 space-y-3 w-full">
                   {[
-                    { platform: 'Facebook', handle: '/rootsabacuslearningschool', url: 'https://facebook.com/rootsabacuslearningschool', icon: 'f' },
-                    { platform: 'Instagram', handle: '@rootsabacus', url: 'https://instagram.com/rootsabacus', icon: 'in' },
-                    { platform: 'YouTube', handle: '@rootsabacuslearningschool', url: 'https://youtube.com/@rootsabacuslearningschool', icon: 'yt' },
-                    { platform: 'LinkedIn', handle: '/roots16', url: 'https://linkedin.com/company/roots16', icon: 'li' },
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-[#E87722] text-xs font-bold flex-shrink-0">
-                        {item.icon}
-                      </div>
-                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:text-[#E87722] underline text-sm">
-                        {item.handle}
-                      </a>
-                    </li>
-                  ))}
+                    { name: 'facebook',  icon: 'f'  },
+                    { name: 'instagram', icon: 'in' },
+                    { name: 'youtube',   icon: 'yt' },
+                    { name: 'linkedin',  icon: 'li' },
+                  ]
+                    .filter(item => contact?.socialLinks?.[item.name])
+                    .map((item, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-[#E87722] text-xs font-bold flex-shrink-0">
+                          {item.icon}
+                        </div>
+                        <a
+                          href={contact.socialLinks[item.name]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[#E87722] underline text-sm"
+                        >
+                          {getHandle(contact.socialLinks[item.name])}
+                        </a>
+                      </li>
+                    ))
+                  }
                 </ul>
               </div>
             </div>
@@ -176,27 +192,23 @@ const ContactPage = () => {
                 </div>
                 <h4 className="text-xl font-bold text-[#E87722]">Visit Us</h4>
                 <ul className="text-left text-sm text-gray-700 space-y-3 w-full">
-                  <li className="flex items-start gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0 mt-0.5">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                      <circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    <span>
-                      317-318, Suneja Tower-I, District Centre,<br />
-                      Janakpuri, New Delhi 110058, India
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
-                      <rect x="2" y="3" width="20" height="14" rx="2"/>
-                      <polyline points="8 21 12 17 16 21"/>
-                    </svg>
-                    <a href="https://linkedin.com/company/roots16" target="_blank" rel="noopener noreferrer" className="hover:text-[#E87722] underline">
-                      Roots16 Edutech Pvt. Ltd.
-                    </a>
-                  </li>
                   {contact?.address && (
-                    <li className="text-xs text-gray-500">{contact.address}</li>
+                    <li className="flex items-start gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0 mt-0.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      <span>{contact.address}</span>
+                    </li>
+                  )}
+                  {contact?.workingHours && (
+                    <li className="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="1.5" className="w-4 h-4 flex-shrink-0">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      <span>{contact.workingHours}</span>
+                    </li>
                   )}
                 </ul>
               </div>

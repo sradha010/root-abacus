@@ -13,16 +13,26 @@ export const SiteSettingsProvider = ({ children }) => {
     footerLinks: [],
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const fetchSettings = () => {
+    setLoading(true)
+    setError(null)
     getSettings()
       .then(({ data }) => setSettings(data.data))
-      .catch(() => {})
+      .catch((err) => {
+        console.error('Failed to load site settings:', err.message)
+        setError(err.message)
+      })
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    fetchSettings()
   }, [])
 
   return (
-    <SiteSettingsContext.Provider value={{ settings, loading }}>
+    <SiteSettingsContext.Provider value={{ settings, loading, error, refetch: fetchSettings }}>
       {children}
     </SiteSettingsContext.Provider>
   )

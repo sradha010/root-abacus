@@ -1,0 +1,22 @@
+there are some changes I want to make in my website, 1st thingin my teacher training section i have 2 parts, abacus training and Vedic training and i want this part to be dynamic const highlights = [
+  {
+    feature: 'Training Fees',
+    detail: null,
+    custom: (
+      <div>
+        <p className="line-through text-gray-400 text-sm">INR 45000 (56% Off)</p>
+        <p className="text-[#E87722] font-bold">Effective Price: INR 19900 / USD 275</p>
+        <p className="text-gray-400 text-xs italic">Inclusive of taxes – Limited Period Offer</p>
+      </div>
+    ),
+  },
+  { feature: 'Duration',             detail: 'Self-paced. Finish in as little as 40 days' },
+  { feature: 'Levels Covered',       detail: '8 Levels' },
+  { feature: 'Method of Training',   detail: 'Easy-to-follow online abacus training video modules' },
+  { feature: 'Practice Method',      detail: 'Software-based online practice' },
+  { feature: 'Support',              detail: 'Phone, WhatsApp & Email' },
+  { feature: 'Certification',        detail: 'Awarded upon course completion' },
+  { feature: 'Performance Monitoring', detail: 'Via online dashboard' },
+  { feature: 'Performance Reporting', detail: 'Automated email updates' },
+  { feature: 'Examination',          detail: 'Online' },
+], and this is part is there both in Vedic and abacus page, but in admin panel also can u make like under training section 2 pages Vedic training page and abacus training page , as per for abacus training page we upload vedios too ,... i hope u understand what i want .2nd thing in franchise page , we have book a call button when u click it u get a form stuff but , in backend we don't have any page or section regarding that , so i want one more page in admin panel for franchise queries.
